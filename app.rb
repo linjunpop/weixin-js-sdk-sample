@@ -13,8 +13,6 @@ require 'sinatra/base'
 require 'weixin_js_sdk'
 require 'dalli'
 
-require 'oj'
-
 class App < Sinatra::Base
   use Rollbar::Middleware::Sinatra
 
@@ -64,8 +62,6 @@ class App < Sinatra::Base
     content_type 'application/json'
 
     json = JSON.parse(request.body.read, symbolize_names: true)
-
-    puts json
 
     signature = generate_signature(
       nonce_str: json[:nonce_str],
