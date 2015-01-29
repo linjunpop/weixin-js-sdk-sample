@@ -60,6 +60,22 @@ class App < Sinatra::Base
     erb :index
   end
 
+  post '/signature' do
+    content_type 'application/json'
+
+    json = JSON.parse(request.body.read, symbolize_names: true)
+
+    puts json
+
+    signature = generate_signature(
+      nonce_str: json[:nonce_str],
+      timestamp: json[:timestamp],
+      url: json[:url]
+    )
+
+    { signature: signature }.to_json
+  end
+
   private
 
   def generate_signature(nonce_str:, timestamp:, url:)
