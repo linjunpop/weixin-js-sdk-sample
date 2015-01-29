@@ -58,10 +58,20 @@ class App < Sinatra::Base
     erb :index
   end
 
+  before do
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type,Accept"
+  end
+
   post '/signature' do
     content_type 'application/json'
 
-    json = JSON.parse(request.body.read, symbolize_names: true)
+    begin
+      json = JSON.parse(request.body.read, symbolize_names: true)
+    rescue JSON::ParserError
+      halt 422
+    end
 
     signature = generate_signature(
       nonce_str: json[:nonce_str],
@@ -70,6 +80,10 @@ class App < Sinatra::Base
     )
 
     { signature: signature }.to_json
+  end
+
+  options '/*' do
+    halt 200
   end
 
   private
