@@ -64,7 +64,7 @@ class App < Sinatra::Base
     response.headers["Access-Control-Allow-Headers"] = "Content-Type,Accept"
   end
 
-  post '/signature' do
+  post '/' do
     content_type 'application/json'
 
     begin
@@ -73,13 +73,20 @@ class App < Sinatra::Base
       halt 422
     end
 
+    nonce_str = SecureRandom.urlsafe_base64
+    timestamp = Time.now.to_i
+
     signature = generate_signature(
-      nonce_str: json[:nonce_str],
-      timestamp: json[:timestamp],
+      nonce_str: nonce_str,
+      timestamp: timestamp.to_s,
       url: json[:url]
     )
 
-    { signature: signature }.to_json
+    {
+      nonce_str: nonce_str,
+      timestamp: timestamp,
+      signature: signature
+    }.to_json
   end
 
   options '/*' do
