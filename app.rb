@@ -73,12 +73,12 @@ class App < Sinatra::Base
       halt 422
     end
 
-    nonce_str = SecureRandom.urlsafe_base64
+    nonce_str = SecureRandom.hex
     timestamp = Time.now.to_i
 
     signature = generate_signature(
       nonce_str: nonce_str,
-      timestamp: timestamp.to_s,
+      timestamp: timestamp,
       url: json[:url]
     )
 
